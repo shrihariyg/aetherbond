@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AetherBond — Multipath Network Aggregator</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for real-time graphics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <i class="fa-solid fa-bolt logo-icon"></i>
+                <h2>Aether<span>Bond</span></h2>
+            </div>
+            <nav class="menu">
+                <a href="#" class="active"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+                <a href="https://releases.ubuntu.com/22.04/" target="_blank"><i class="fa-solid fa-file-download"></i> Test ISO Files</a>
+                <a href="#docs"><i class="fa-solid fa-circle-info"></i> Documentation</a>
+            </nav>
+            <div class="sidebar-footer">
+                <p>Status: <span id="sys-mode-tag" class="badge-sim">Simulator ON</span></p>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="main-header">
+                <div class="welcome">
+                    <h1>Multipath Aggregator Control</h1>
+                    <p>Combine Wi-Fi, Ethernet, and Mobile links for high-speed download acceleration.</p>
+                </div>
+                <div class="top-stats">
+                    <div class="mini-stat">
+                        <span class="label">Aggregate Speed</span>
+                        <span class="value" id="top-speed">0.00 <span class="unit">Mbps</span></span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- Control Panel Card -->
+                <section class="card control-panel animate-fade">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-gears icon-accent"></i> Download Controller</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="input-group">
+                            <label for="download-url">Target Download URL</label>
+                            <input type="text" id="download-url" value="https://releases.ubuntu.com/22.04/ubuntu-22.04.4-desktop-amd64.iso" placeholder="Enter HTTP direct download link">
+                        </div>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label for="chunk-size">Segment Size (MB)</label>
+                                <select id="chunk-size">
+                                    <option value="2.0">2 MB (Aggressive Balancing)</option>
+                                    <option value="5.0" selected>5 MB (Standard Aggregation)</option>
+                                    <option value="15.0">15 MB (Large files > 5GB)</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label for="mode-select">Operational Mode</label>
+                                <select id="mode-select">
+                                    <option value="simulation" selected>Simulated Multipath</option>
+                                    <option value="physical">Physical Native Interfaces</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button id="start-btn" class="btn btn-primary">
+                            <i class="fa-solid fa-play"></i> Aggregate & Download
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Aggregation Metrics Display -->
+                <section class="card telemetry-panel animate-fade">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-chart-line icon-accent"></i> Bandwidth Aggregation Chart</h3>
+                    </div>
+                    <div class="card-body chart-container">
+                        <canvas id="speed-chart"></canvas>
+                    </div>
+                </section>
+
+                <!-- Active Connections Status Grid -->
+                <section class="card interfaces-panel span-full animate-fade">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-network-wired icon-accent"></i> Bonded Network Interfaces</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="interfaces-grid" id="interfaces-container">
+                            <!-- Dynamic Cards generated by Javascript -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Chunk Pipeline Matrix -->
+                <section class="card chunk-matrix-panel span-full animate-fade">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-cubes icon-accent"></i> In-Flight Chunk Pipeline Assembly</h3>
+                        <div class="chunk-legend">
+                            <span class="legend-item"><span class="box block-pending"></span> Pending</span>
+                            <span class="legend-item"><span class="box block-active"></span> Downloading</span>
+                            <span class="legend-item"><span class="box block-done"></span> Completed</span>
+                            <span class="legend-item"><span class="box block-fail"></span> Re-steered/Failed</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progress-fill-bar" style="width: 0%"></div>
+                            </div>
+                            <div class="progress-stats">
+                                <span id="progress-percent">0% Completed</span>
+                                <span id="progress-ratio">0/0 chunks</span>
+                            </div>
+                        </div>
+                        <div class="chunk-matrix" id="chunk-matrix-container">
+                            <!-- Dynamic blocks -->
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    
+    <script src="js/app.js"></script>
+</body>
+</html>

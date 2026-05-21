@@ -1,0 +1,63 @@
+# Default values for aetherbond-relay.
+# This is a YAML-formatted file.
+
+replicaCount: 3
+
+image:
+  repository: aetherbond/aggregator
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# Network configuration
+# Set to true for native user-space performance bypass, binding sockets directly to physical host cards
+hostNetwork: true
+
+aetherbond:
+  listenPort: 51820
+  # Noise Protocol Handshake Resumption settings
+  handshakeTimeoutSeconds: 5
+  epochTimeoutSeconds: 3600
+  # Aggregator Resequencing and Buffer Limits
+  resequencing:
+    maxBufferSizePackets: 1000
+    baseTimeoutMs: 40
+  # BBR & Congestion parameters
+  congestion:
+    rttSmootherAlpha: 0.125
+    queueBloatThresholdMs: 25.0
+
+# Service settings for exposing aggregators
+service:
+  type: LoadBalancer
+  port: 51820
+  targetPort: 51820
+  protocol: UDP
+  annotations:
+    # Exposing the LoadBalancer using latency-routing DNS services
+    external-dns.alpha.kubernetes.io/hostname: "relay.aetherbond.net"
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+
+# CPU/Memory limits tuned for high-throughput packet processing
+resources:
+  limits:
+    cpu: "2"
+    memory: 2Gi
+  requests:
+    cpu: "500m"
+    memory: 512Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 75
+  # Custom metrics scaling can also hook into packet throughput values
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  aetherbond-vps:
+    build: .
+    container_name: aetherbond-vps
+    ports:
+      - "51820:51820/udp"
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: ["--host", "0.0.0.0", "--port", "51820", "--secret", "AetherBondSecretKeyDefault32Bytes!"]
+    restart: unless-stopped
+    networks:
+      - aetherbond-net
+
+networks:
+  aetherbond-net:
+    driver: bridge

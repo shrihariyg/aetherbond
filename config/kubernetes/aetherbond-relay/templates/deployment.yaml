@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "aetherbond-relay.fullname" . }}
+  labels:
+    {{- include "aetherbond-relay.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "aetherbond-relay.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      # Standard Prometheus metrics scraper bindings
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9100"
+        prometheus.io/path: "/metrics"
+      labels:
+        {{- include "aetherbond-relay.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      
+      # Bind directly to VPS host network physical gateways for multi-gigabit user-space speed
+      hostNetwork: {{ .Values.hostNetwork }}
+      
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          
+          # Root/admin privileges required to load policy tables and handle network tunnels
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+                - NET_RAW
+          
+          env:
+            - name: LISTEN_PORT
+              value: "{{ .Values.aetherbond.listenPort }}"
+            - name: HANDSHAKE_TIMEOUT
+              value: "{{ .Values.aetherbond.handshakeTimeoutSeconds }}"
+            - name: RESEQ_MAX_BUFFER
+              value: "{{ .Values.aetherbond.resequencing.maxBufferSizePackets }}"
+            - name: RESEQ_TIMEOUT
+              value: "{{ .Values.aetherbond.resequencing.baseTimeoutMs }}"
+          
+          ports:
+            - name: wg-port
+              containerPort: {{ .Values.aetherbond.listenPort }}
+              protocol: UDP
+            - name: metrics-port
+              containerPort: 9100
+              protocol: TCP
+              
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+            
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

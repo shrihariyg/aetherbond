@@ -1,0 +1,12 @@
+apiVersion: v2
+name: aetherbond-relay
+description: Production-grade dynamic multi-path aggregator cloud relay for AetherBond VPN.
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - aetherbond
+  - vpn
+  - multi-path
+  - aggregator
+  - network

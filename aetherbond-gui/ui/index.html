@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AetherBond Multipath Aggregator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="glass-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="logo">
+        <i class="fa-solid fa-circle-nodes logo-icon"></i>
+        <span>AETHERBOND</span>
+      </div>
+      <nav class="nav-menu">
+        <a href="#" class="nav-item active"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-network-wired"></i> Adapters</a>
+        <a href="#" class="nav-item" id="btn-trigger-nat"><i class="fa-solid fa-shield-halved"></i> NAT Diagnostics</a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-sliders"></i> QoS Pacing</a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-book-medical"></i> Diagnostics</a>
+      </nav>
+      <div class="connection-status connected">
+        <div class="pulse-indicator"></div>
+        <span>Core Bond Active</span>
+      </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main class="main-content">
+      <header class="header">
+        <div class="header-title">
+          <h1>Multipath Aggregation Hub</h1>
+          <p>Real-time bandwidth bonding and dynamic failover stats</p>
+        </div>
+        <div class="system-time">
+          <i class="fa-regular fa-clock"></i> <span id="clock-display">00:00:00</span>
+        </div>
+      </header>
+
+      <!-- Stat Cards -->
+      <section class="metrics-grid">
+        <div class="metric-card">
+          <div class="card-header">
+            <span>Aggregated Speed</span>
+            <i class="fa-solid fa-gauge-high text-emerald"></i>
+          </div>
+          <div class="card-value" id="val-total-speed">88.0 <span class="unit">Mbps</span></div>
+          <div class="card-footer">
+            <span class="text-emerald"><i class="fa-solid fa-arrow-trend-up"></i> 88.0%</span> efficiency
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="card-header">
+            <span>Average RTT</span>
+            <i class="fa-solid fa-microchip text-cyan"></i>
+          </div>
+          <div class="card-value" id="val-avg-rtt">11.2 <span class="unit">ms</span></div>
+          <div class="card-footer">
+            <span class="text-cyan"><i class="fa-solid fa-bolt"></i> Kalman filter</span> smoothed
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="card-header">
+            <span>Resequencer Cache</span>
+            <i class="fa-solid fa-database text-amber"></i>
+          </div>
+          <div class="card-value" id="val-buffer-size">67.5 <span class="unit">KB</span></div>
+          <div class="card-footer">
+            <span class="text-amber"><i class="fa-solid fa-triangle-exclamation"></i> Memory limit</span> safe
+          </div>
+        </div>
+      </section>
+
+      <!-- Dynamic Chart and Lanes -->
+      <div class="dashboard-body">
+        <!-- Live Traffic Graph -->
+        <section class="chart-section">
+          <div class="section-header">
+            <h2>Active Lane Telemetry (RTT Profiles)</h2>
+            <div class="chart-legend">
+              <span class="legend-item"><span class="bullet eth"></span> Ethernet</span>
+              <span class="legend-item"><span class="bullet wifi"></span> Wi-Fi</span>
+              <span class="legend-item"><span class="bullet lte"></span> LTE</span>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="telemetry-chart"></canvas>
+          </div>
+        </section>
+
+        <!-- Lane Interface List -->
+        <section class="lanes-section">
+          <h2>Active Hardware Lanes</h2>
+          <div class="lanes-list" id="lanes-container">
+            <!-- Dynamic elements will load here -->
+            <div class="lane-item">
+              <div class="lane-info">
+                <i class="fa-solid fa-ethernet lane-icon eth"></i>
+                <div>
+                  <div class="lane-name">eth0 (Ethernet Connection)</div>
+                  <div class="lane-ip">192.168.1.50</div>
+                </div>
+              </div>
+              <div class="lane-status online">Active</div>
+            </div>
+
+            <div class="lane-item">
+              <div class="lane-info">
+                <i class="fa-solid fa-wifi lane-icon wifi"></i>
+                <div>
+                  <div class="lane-name">wlan0 (Wi-Fi Channel)</div>
+                  <div class="lane-ip">192.168.10.12</div>
+                </div>
+              </div>
+              <div class="lane-status online">Active</div>
+            </div>
+
+            <div class="lane-item">
+              <div class="lane-info">
+                <i class="fa-solid fa-signal lane-icon lte"></i>
+                <div>
+                  <div class="lane-name">lte0 (Cellular Network)</div>
+                  <div class="lane-ip">10.45.122.9</div>
+                </div>
+              </div>
+              <div class="lane-status online">Active</div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- NAT Profile Diagnostics Section -->
+      <section class="nat-section hidden" id="nat-diagnostic-panel">
+        <div class="section-header">
+          <h2>RFC 5389 STUN NAT Classification Diagnostics</h2>
+          <button class="btn btn-close" id="btn-close-nat"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="nat-grid" id="nat-profiles-container">
+          <div class="loading-spinner">
+            <i class="fa-solid fa-spinner fa-spin"></i> Performing symmetric NAT discovery probes...
+          </div>
+        </div>
+      </section>
+
+      <!-- Logging console -->
+      <footer class="console-section">
+        <div class="console-header">
+          <span><i class="fa-solid fa-terminal"></i> Core Diagnostics Logger</span>
+          <span class="log-file-path">config/aetherbond-diagnostics.log</span>
+        </div>
+        <div class="console-body" id="log-console">
+          <div class="log-line"><span class="log-time">[16:24:00]</span> <span class="log-level info">[INFO]</span> AetherBond Core data-plane loaded. AF_XDP bypass ready.</div>
+          <div class="log-line"><span class="log-time">[16:24:01]</span> <span class="log-level info">[INFO]</span> Go orchestrator dynamic monitor initialized netlink sockets.</div>
+          <div class="log-line"><span class="log-time">[16:24:03]</span> <span class="log-level warn">[WARN]</span> Port mapping probe for lte0 flagged: Symmetric NAT detected.</div>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
